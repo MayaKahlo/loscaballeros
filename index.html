@@ -107,16 +107,16 @@ header{animation:up .4s ease both}
   <div class="tog">
     <div class="tog-row">
       <span class="tog-lbl">Processing Mode</span>
-      <span class="tog-cur" id="cur">Quick Scan</span>
+      <span class="tog-cur" id="cur">Simple</span>
     </div>
     <div class="tog-wrap">
-      <span class="tog-opt on" id="oL">Quick Scan</span>
+      <span class="tog-opt on" id="oL">Simple</span>
       <div class="track" id="track" tabindex="0" role="switch" aria-checked="false">
-        <div class="thumb"><span id="tTxt">QS</span></div>
+        <div class="thumb"><span id="tTxt">S</span></div>
       </div>
-      <span class="tog-opt" id="oR">Deep Analysis</span>
+      <span class="tog-opt" id="oR">Detailed</span>
     </div>
-    <div class="tog-desc" id="tDesc">Fast processing — detects objects, colours, and basic metadata. Best for quick previews and large batches.</div>
+    <div class="tog-desc" id="tDesc">Simple coloring page - the main lines of the image will be emphasized.</div>
   </div>
 
   <div class="dz" id="dz" tabindex="0" role="button" aria-label="Upload image">
@@ -153,26 +153,26 @@ header{animation:up .4s ease both}
   <div class="st" id="st"></div>
 
   <section class="about">
-    <h2>Meet the team ✦</h2>
+    <h2>Meet the Team ✦</h2>
     <div class="profiles">
-      <div class="prof"><div class="av a1">JR</div><div class="pt"><h3>Jamie Rivera</h3><div class="role">Lead Developer</div><p>Builder of things, breaker of things. I made this tool to make image processing fast and painless — no installs, no accounts, just drop and go.</p><a href="#">Portfolio →</a></div></div>
-      <div class="prof"><div class="av a2">SK</div><div class="pt"><h3>Sam Kowalski</h3><div class="role">Backend & Infrastructure</div><p>I handle everything after you hit the button — pipelines, queues, and making sure your image comes back looking exactly right. Systems nerd, occasional surfer.</p><a href="#">Portfolio →</a></div></div>
-      <div class="prof"><div class="av a3">ML</div><div class="pt"><h3>Maya Lin</h3><div class="role">Design & UX</div><p>I'm the reason this doesn't look like a spreadsheet. I obsess over every pixel so using this tool feels like the easiest thing you did all day.</p><a href="#">Portfolio →</a></div></div>
+      <div class="prof"><div class="av a1">MD</div><div class="pt"><h3>Maya De Los Santos</h3><div class="role">Frontend Developer</div><p>Builder of things, breaker of things. I made this tool to make image processing fast and painless — no installs, no accounts, just drop and go.</p><a href="#">Portfolio →</a></div></div>
+      <div class="prof"><div class="av a2">AL</div><div class="pt"><h3>Alyssa Lanter</h3><div class="role">Backend Developer</div><p>I handle everything after you hit the button — pipelines, queues, and making sure your image comes back looking exactly right. Systems nerd, occasional surfer.</p><a href="#">Portfolio →</a></div></div>
+      <div class="prof"><div class="av a3">KL</div><div class="pt"><h3>Karina LaRubbio</h3><div class="role">Backend Developer</div><p>I'm the reason this doesn't look like a spreadsheet. I obsess over every pixel so using this tool feels like the easiest thing you did all day.</p><a href="#">Portfolio →</a></div></div>
     </div>
   </section>
 </div>
-<footer>handcrafted with care ✦ your files are never stored</footer>
+<footer>CSCI1430 Computer Vision ✦ Final Project</footer>
 
 <script>
 const g=id=>document.getElementById(id);
 const dz=g('dz'),fi=g('fi'),ddf=g('ddf'),prev=g('prev'),img=g('pi');
 const pn=g('pn'),ps=g('ps'),meta=g('meta'),bgo=g('bgo'),pw=g('pw'),pb=g('pb'),st=g('st');
 const track=g('track'),oL=g('oL'),oR=g('oR'),cur=g('cur'),tDesc=g('tDesc'),tTxt=g('tTxt');
-let file=null,mode='quick_scan',side=0,dc=0;
+let file=null,mode='simple_scan',side=0,dc=0;
 
 const M=[
-  {v:'quick_scan',n:'Quick Scan',a:'QS',d:'Fast processing — detects objects, colours, and basic metadata. Best for quick previews and large batches.'},
-  {v:'deep_analysis',n:'Deep Analysis',a:'DA',d:'Full AI pipeline — semantic segmentation, texture mapping, EXIF extraction, and quality scoring. Takes longer.'}
+  {v:'simple_scan',n:'Simple',a:'S',d:'Simple coloring page - the main lines of the image will be emphasized.'},
+  {v:'detailed_scan',n:'Detailed',a:'D',d:'Detailed coloring page - the main + intricate lines of the image will be emphasized.'}
 ];
 function tog(s){
   side=s;const m=M[s];mode=m.v;

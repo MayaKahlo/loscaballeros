@@ -220,7 +220,8 @@ function reset(){
   pb.style.width='0';hide();
 }
 async function uploadImage() {
-    const response = await fetch('https://loscaballeros.onrender.com/api/data');
+    console.log("Uploading image ...");
+    const response = await fetch('https://karinalarubbio-loscaballeros.hf.space/api/data');
     const data = await response.json();
     console.log(data);
     return response;

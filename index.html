@@ -219,6 +219,11 @@ function reset(){
   meta.style.display='none';bgo.style.display='none';pw.style.display='none';
   pb.style.width='0';hide();
 }
+async function uploadImage() {
+    const response = await fetch('https://loscaballeros.onrender.com/api/data');
+    const data = await response.json();
+    console.log(data);
+}
 bgo.addEventListener('click',async()=>{
   if(!file)return;
   bgo.disabled=true;bgo.textContent='Processing…';pw.style.display='block';hide();prog();

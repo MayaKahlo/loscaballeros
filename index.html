@@ -223,13 +223,14 @@ async function uploadImage() {
     const response = await fetch('https://loscaballeros.onrender.com/api/data');
     const data = await response.json();
     console.log(data);
+    return response;
 }
 bgo.addEventListener('click',async()=>{
   if(!file)return;
   bgo.disabled=true;bgo.textContent='Processing…';pw.style.display='block';hide();prog();
   const fd=new FormData();fd.append('image',file);fd.append('mode',mode);
   try{
-    const r=await fetch('/api/process',{method:'POST',body:fd});
+    const r=await uploadImage();
     pb.style.width='100%';
     if(r.ok){const d=await r.json();show('✓ Done! '+(d.message||'Image processed successfully.'),'ok');}
     else{const d=await r.json().catch(()=>({}));show('✗ Error '+r.status+': '+(d.message||'Processing failed.'),'er');}

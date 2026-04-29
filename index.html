@@ -246,14 +246,15 @@ bgo.addEventListener('click',async()=>{
     }
 
     // Return the resulting image and metadata
-    const r = await response.json();
+    const blob = await response.blob();
+    const imageURL = URL.createObjectURL(blob);
     console.log("Image processed successfully:", r);
     pb.style.width='100%';
     show('✓ Done! '+(r.message||'Image processed successfully.'),'ok');
 
     // Show the new image in place
     // TODO: Switch to a new interactive page with drawing tools for the image
-    img.src = r.image;
+    img.src = imageURL;
   }catch(error){
     show('✗ Network error — is your backend running?','er');
     console.log(error);

@@ -233,13 +233,14 @@ async function uploadImage() {
       });
 
       if(!response.ok){
+        show('✗ Error '+response.status,'er');
         throw new Error("Backend failed with error:" + response.message);
       }
 
-      // Return the resulting image
+      // Return the resulting image and metadata
       const result = await response.json();
       console.log("Image processed successfully:", result);
-      return response;
+      return result;
     }
     catch(error){
       console.error("Failed to upload or process image, see logs for more details:", error);
@@ -249,17 +250,13 @@ bgo.addEventListener('click',async()=>{
   if(!file)return;
   bgo.disabled=true;bgo.textContent='Processing…';pw.style.display='block';hide();prog();
   try{
-    const r=await uploadImage();
+    const r = await uploadImage();
     pb.style.width='100%';
-    if(r.ok){
-      const d=await r.json();
-      show('✓ Done! '+(d.message||'Image processed successfully.'),'ok');
+    show('✓ Done! '+(r.message||'Image processed successfully.'),'ok');
 
-      // Show the new image in place
-      // TODO: Switch to a new interactive page with drawing tools for the image
-      img.src = d.image;
-    }
-    else{const d=await r.json().catch(()=>({}));show('✗ Error '+r.status+': '+(d.message||'Processing failed.'),'er');}
+    // Show the new image in place
+    // TODO: Switch to a new interactive page with drawing tools for the image
+    img.src = r.image;
   }catch(error){
     show('✗ Network error — is your backend running?','er');
     console.log(error);

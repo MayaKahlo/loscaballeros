@@ -220,11 +220,30 @@ function reset(){
   pb.style.width='0';hide();
 }
 async function uploadImage() {
+    // Upload image to backend
     console.log("Uploading image ...");
-    const response = await fetch('https://karinalarubbio-loscaballeros.hf.space/api/data');
-    const data = await response.json();
-    console.log(data);
-    return response;
+    const formData = new FormData();
+    formData.append('image', file);
+    formData.append('mode', mode);
+
+    try{
+      const response = await fetch('https://karinalarubbio-loscaballeros.hf.space/api/segment', {
+        method: 'POST',
+        body: formData
+      });
+
+      if(!response.ok){
+        throw new Error("Backend failed with error:" + response.message);
+      }
+
+      // Return the resulting image
+      const result = await response.json();
+      console.log("Image processed successfully:", result);
+      return response;
+    }
+    catch{
+      console.error("Failed to upload or process image, see logs for moree")
+    }
 }
 bgo.addEventListener('click',async()=>{
   if(!file)return;

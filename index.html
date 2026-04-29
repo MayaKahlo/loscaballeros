@@ -248,9 +248,9 @@ bgo.addEventListener('click',async()=>{
     // Return the resulting image and metadata
     const blob = await response.blob();
     const imageURL = URL.createObjectURL(blob);
-    console.log("Image processed successfully:", r);
+    console.log("Image processed successfully");
     pb.style.width='100%';
-    show('✓ Done! '+(r.message||'Image processed successfully.'),'ok');
+    show('✓ Done! ','ok');
 
     // Show the new image in place
     // TODO: Switch to a new interactive page with drawing tools for the image

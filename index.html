@@ -264,8 +264,6 @@ bgo.addEventListener('click',async()=>{
     img.style.height = 'auto';
     img.src = imageURL;
     img.onload=()=>{g('mW').textContent=img.naturalWidth+' px';g('mH').textContent=img.naturalHeight+' px';};
-    g('mT').textContent=f.type||'unknown';g('mS').textContent=fmt(blob.size);
-    pn.textContent=f.name;ps.textContent=fmt(f.size);
     ddf.style.display='none';prev.style.display='block';dz.classList.add('has');
     meta.style.display='flex';bgo.style.display='block';
     hide();

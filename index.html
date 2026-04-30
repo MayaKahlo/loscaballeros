@@ -241,13 +241,16 @@ bgo.addEventListener('click',async()=>{
     });
 
     if(!response.ok){
-      show('✗ Error '+response.status,'er');
-      throw new Error("Backend failed with error:" + response.message);
+      show('✗ Error '+response.statusText,'er');
+      throw new Error("Backend failed with error:" + response.statusText);
     }
 
     // Return the resulting image and metadata
     const blob = await response.blob();
+    console.log(blob.size);
+    console.log(blob.type);
     const imageURL = URL.createObjectURL(blob);
+    console.log(imageURL);
     console.log("Image processed successfully");
     pb.style.width='100%';
     show('✓ Done! ','ok');

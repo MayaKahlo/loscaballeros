@@ -257,6 +257,7 @@ bgo.addEventListener('click',async()=>{
 
     // Show the new image in place
     // TODO: Switch to a new interactive page with drawing tools for the image
+    img.style.height = 'auto';
     img.src = imageURL;
   }catch(error){
     show('✗ Network error — is your backend running?','er');

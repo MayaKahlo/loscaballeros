@@ -263,6 +263,8 @@ bgo.addEventListener('click',async()=>{
     // TODO: Switch to a new interactive page with drawing tools for the image
     img.style.height = 'auto';
     img.src = imageURL;
+    img.onload=()=>{g('mW').textContent=img.naturalWidth+' px';g('mH').textContent=img.naturalHeight+' px';};
+    g('mT').textContent=f.type||'unknown';g('mS').textContent=fmt(f.size);
   }catch(error){
     show('✗ Network error — is your backend running?','er');
     console.log(error);

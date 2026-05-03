@@ -362,7 +362,7 @@ function initStudio(blob){
     const w=image.naturalWidth,h=image.naturalHeight;
     // Color layer: solid white background only (user paints here)
     canvas.width=w;canvas.height=h;
-    ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);
+    ctx.clearRect(0,0,w,h);
     // Outline layer: the processed image drawn on top, permanent
     outline.width=w;outline.height=h;
     octx.clearRect(0,0,w,h);octx.drawImage(image,0,0);
@@ -412,7 +412,7 @@ g('tEraser').addEventListener('click',()=>{
 });
 g('tClear').addEventListener('click',()=>{
   if(!confirm('Clear all coloring?'))return;
-  ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.clearRect(0,0,canvas.width,canvas.height);
 });
 
 // ── Canvas drawing ────────────────────────────────────────────────
@@ -433,15 +433,15 @@ function draw(e){
   if(!painting)return;
   const p=pos(e);
   ctx.lineWidth=activeBrush;ctx.lineCap='round';ctx.lineJoin='round';
-  if(erasing){ctx.globalCompositeOperation='destination-out';}
-  else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=activeColor+'99';}
+  if(erasing){ctx.globalCompositeOperation='destination-out';ctx.strokeStyle='rgba(0,0,0,1)';}
+  else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=activeColor+'b3';}
   ctx.lineTo(p.x,p.y);ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);
 }
 function stopDraw(){painting=false;ctx.beginPath();}
 function dot(p){
   ctx.lineWidth=activeBrush;ctx.lineCap='round';
-  if(erasing){ctx.globalCompositeOperation='destination-out';}
-  else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=activeColor+'99';}
+  if(erasing){ctx.globalCompositeOperation='destination-out';ctx.strokeStyle='rgba(0,0,0,1)';}
+  else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=activeColor+'b3';}
   ctx.lineTo(p.x+0.1,p.y+0.1);ctx.stroke();ctx.beginPath();
 }
 

@@ -80,8 +80,8 @@ body.drag .dh{display:block}
 .studio-label{font-family:'Architects Daughter',cursive;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:.6rem}
 
 /* Canvas wrapper */
-.canvas-wrap{position:relative;border:2px solid var(--bdr);border-radius:var(--r);overflow:hidden;background:#fff;cursor:crosshair;touch-action:none}
-#colorCanvas{display:block;width:100%;height:auto}
+.canvas-wrap{position:relative;border:2px solid var(--bdr);border-radius:var(--r);overflow:hidden;background:#fff;cursor:crosshair;touch-action:none;width:100%}
+#colorCanvas,#outlineCanvas,#hitCanvas{display:block}
 
 /* Toolbar */
 .toolbar{margin-top:.9rem;padding:.8rem 1rem;background:var(--sur);border:2px solid var(--bdr);border-radius:var(--r);display:flex;flex-wrap:wrap;align-items:center;gap:.75rem}
@@ -200,8 +200,9 @@ header{animation:up .4s ease both}
   <div class="studio" id="studio">
     <div class="studio-label">Color it! 🎨</div>
     <div class="canvas-wrap" id="canvasWrap">
-      <canvas id="colorCanvas" style="display:block;width:100%;height:auto"></canvas>
+      <canvas id="colorCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%"></canvas>
       <canvas id="outlineCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none"></canvas>
+      <canvas id="hitCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0"></canvas>
     </div>
 
     <!-- Toolbar -->
@@ -250,6 +251,7 @@ const pw=g('pw'),pb=g('pb'),st=g('st'),studio=g('studio');
 const track=g('track'),oL=g('oL'),oR=g('oR'),cur=g('cur'),tDesc=g('tDesc'),tTxt=g('tTxt');
 const canvas=g('colorCanvas'),ctx=canvas.getContext('2d');
 const outline=g('outlineCanvas'),octx=outline.getContext('2d');
+const hit=g('hitCanvas');
 const brushSize=g('brushSize'),brushDot=g('brushDot'),customColor=g('customColor');
 
 let file=null,mode='simple_scan',side=0,dc=0;
@@ -360,11 +362,12 @@ function initStudio(blob){
   const image=new Image();
   image.onload=()=>{
     const w=image.naturalWidth,h=image.naturalHeight;
-    // Color layer: solid white background only (user paints here)
-    canvas.width=w;canvas.height=h;
+    const wrap=g('canvasWrap');
+    const displayW=wrap.clientWidth||640;
+    const displayH=Math.round(displayW*h/w);
+    wrap.style.height=displayH+'px';
+    [canvas,outline,hit].forEach(c=>{c.width=w;c.height=h;});
     ctx.clearRect(0,0,w,h);
-    // Outline layer: the processed image drawn on top, permanent
-    outline.width=w;outline.height=h;
     octx.clearRect(0,0,w,h);octx.drawImage(image,0,0);
     studio.style.display='block';
     studio.scrollIntoView({behavior:'smooth',block:'start'});
@@ -417,7 +420,7 @@ g('tClear').addEventListener('click',()=>{
 
 // ── Canvas drawing ────────────────────────────────────────────────
 function pos(e){
-  const r=canvas.getBoundingClientRect();
+  const r=hit.getBoundingClientRect();
   const scaleX=canvas.width/r.width,scaleY=canvas.height/r.height;
   const src=e.touches?e.touches[0]:e;
   return{x:(src.clientX-r.left)*scaleX,y:(src.clientY-r.top)*scaleY};
@@ -445,13 +448,13 @@ function dot(p){
   ctx.lineTo(p.x+0.1,p.y+0.1);ctx.stroke();ctx.beginPath();
 }
 
-canvas.addEventListener('mousedown',startDraw);
-canvas.addEventListener('mousemove',draw);
-canvas.addEventListener('mouseup',stopDraw);
-canvas.addEventListener('mouseleave',stopDraw);
-canvas.addEventListener('touchstart',startDraw,{passive:false});
-canvas.addEventListener('touchmove',draw,{passive:false});
-canvas.addEventListener('touchend',stopDraw);
+hit.addEventListener('mousedown',startDraw);
+hit.addEventListener('mousemove',draw);
+hit.addEventListener('mouseup',stopDraw);
+hit.addEventListener('mouseleave',stopDraw);
+hit.addEventListener('touchstart',startDraw,{passive:false});
+hit.addEventListener('touchmove',draw,{passive:false});
+hit.addEventListener('touchend',stopDraw);
 
 // ── Helpers ───────────────────────────────────────────────────────
 function prog(){

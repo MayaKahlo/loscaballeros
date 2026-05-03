@@ -340,8 +340,10 @@ function download(){
     const exp=document.createElement('canvas');
     exp.width=canvas.width;exp.height=canvas.height;
     const ectx=exp.getContext('2d');
+    ectx.fillStyle='#fff';ectx.fillRect(0,0,exp.width,exp.height);
+    ectx.drawImage(outline,0,0);
+    ectx.globalCompositeOperation='multiply';
     ectx.drawImage(canvas,0,0);
-    ectx.globalAlpha=1;ectx.drawImage(outline,0,0);
     a.href=exp.toDataURL('image/png');
     a.download='coloring-page-colored.png';
   } else if(processedBlob){

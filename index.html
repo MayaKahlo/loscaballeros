@@ -81,7 +81,7 @@ body.drag .dh{display:block}
 
 /* Canvas wrapper */
 .canvas-wrap{position:relative;border:2px solid var(--bdr);border-radius:var(--r);overflow:hidden;background:#fff;cursor:crosshair;touch-action:none;width:100%}
-#colorCanvas,#outlineCanvas,#hitCanvas{display:block}
+#colorCanvas,#outlineCanvas{display:block}
 
 /* Toolbar */
 .toolbar{margin-top:.9rem;padding:.8rem 1rem;background:var(--sur);border:2px solid var(--bdr);border-radius:var(--r);display:flex;flex-wrap:wrap;align-items:center;gap:.75rem}
@@ -200,9 +200,8 @@ header{animation:up .4s ease both}
   <div class="studio" id="studio">
     <div class="studio-label">Color it! 🎨</div>
     <div class="canvas-wrap" id="canvasWrap">
-      <canvas id="colorCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%"></canvas>
       <canvas id="outlineCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none"></canvas>
-      <canvas id="hitCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0"></canvas>
+      <canvas id="colorCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0.7"></canvas>
     </div>
 
     <!-- Toolbar -->
@@ -251,7 +250,6 @@ const pw=g('pw'),pb=g('pb'),st=g('st'),studio=g('studio');
 const track=g('track'),oL=g('oL'),oR=g('oR'),cur=g('cur'),tDesc=g('tDesc'),tTxt=g('tTxt');
 const canvas=g('colorCanvas'),ctx=canvas.getContext('2d');
 const outline=g('outlineCanvas'),octx=outline.getContext('2d');
-const hit=g('hitCanvas');
 const brushSize=g('brushSize'),brushDot=g('brushDot'),customColor=g('customColor');
 
 let file=null,mode='simple_scan',side=0,dc=0;
@@ -343,7 +341,7 @@ function download(){
     exp.width=canvas.width;exp.height=canvas.height;
     const ectx=exp.getContext('2d');
     ectx.drawImage(canvas,0,0);
-    ectx.drawImage(outline,0,0);
+    ectx.globalAlpha=1;ectx.drawImage(outline,0,0);
     a.href=exp.toDataURL('image/png');
     a.download='coloring-page-colored.png';
   } else if(processedBlob){
@@ -366,8 +364,8 @@ function initStudio(blob){
     const displayW=wrap.clientWidth||640;
     const displayH=Math.round(displayW*h/w);
     wrap.style.height=displayH+'px';
-    [canvas,outline,hit].forEach(c=>{c.width=w;c.height=h;});
-    ctx.clearRect(0,0,w,h);
+    [canvas,outline].forEach(c=>{c.width=w;c.height=h;});
+    ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);
     octx.clearRect(0,0,w,h);octx.drawImage(image,0,0);
     studio.style.display='block';
     studio.scrollIntoView({behavior:'smooth',block:'start'});
@@ -415,12 +413,12 @@ g('tEraser').addEventListener('click',()=>{
 });
 g('tClear').addEventListener('click',()=>{
   if(!confirm('Clear all coloring?'))return;
-  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
 });
 
 // ── Canvas drawing ────────────────────────────────────────────────
 function pos(e){
-  const r=hit.getBoundingClientRect();
+  const r=canvas.getBoundingClientRect();
   const scaleX=canvas.width/r.width,scaleY=canvas.height/r.height;
   const src=e.touches?e.touches[0]:e;
   return{x:(src.clientX-r.left)*scaleX,y:(src.clientY-r.top)*scaleY};
@@ -436,25 +434,25 @@ function draw(e){
   if(!painting)return;
   const p=pos(e);
   ctx.lineWidth=activeBrush;ctx.lineCap='round';ctx.lineJoin='round';
-  if(erasing){ctx.globalCompositeOperation='destination-out';ctx.strokeStyle='rgba(0,0,0,1)';}
-  else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=activeColor+'b3';}
+  ctx.globalCompositeOperation='source-over';
+  ctx.strokeStyle=erasing?'#fff':activeColor;
   ctx.lineTo(p.x,p.y);ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);
 }
 function stopDraw(){painting=false;ctx.beginPath();}
 function dot(p){
   ctx.lineWidth=activeBrush;ctx.lineCap='round';
-  if(erasing){ctx.globalCompositeOperation='destination-out';ctx.strokeStyle='rgba(0,0,0,1)';}
-  else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=activeColor+'b3';}
+  ctx.globalCompositeOperation='source-over';
+  ctx.strokeStyle=erasing?'#fff':activeColor;
   ctx.lineTo(p.x+0.1,p.y+0.1);ctx.stroke();ctx.beginPath();
 }
 
-hit.addEventListener('mousedown',startDraw);
-hit.addEventListener('mousemove',draw);
-hit.addEventListener('mouseup',stopDraw);
-hit.addEventListener('mouseleave',stopDraw);
-hit.addEventListener('touchstart',startDraw,{passive:false});
-hit.addEventListener('touchmove',draw,{passive:false});
-hit.addEventListener('touchend',stopDraw);
+canvas.addEventListener('mousedown',startDraw);
+canvas.addEventListener('mousemove',draw);
+canvas.addEventListener('mouseup',stopDraw);
+canvas.addEventListener('mouseleave',stopDraw);
+canvas.addEventListener('touchstart',startDraw,{passive:false});
+canvas.addEventListener('touchmove',draw,{passive:false});
+canvas.addEventListener('touchend',stopDraw);
 
 // ── Helpers ───────────────────────────────────────────────────────
 function prog(){

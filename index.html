@@ -186,7 +186,7 @@ header{animation:up .4s ease both}
     <div class="mi"><span class="mk">Height</span><span class="mv" id="mH">—</span></div>
     <div class="mi"><span class="mk">Type</span><span class="mv" id="mT">—</span></div>
     <div class="mi"><span class="mk">Size</span><span class="mv" id="mS">—</span></div>
-    <div class="mi"><span class="mk">Location Info</span><span class="mv" id="geolocationdata">Amherst, Massachusetts, United States</span></div>
+    <div class="mi"><span class="mk">Location Info</span><span class="mv" id="geolocationdata">-</span></div>
   </div>
 
   <!-- Action buttons -->
@@ -298,6 +298,7 @@ function load(f){
   previewImg.src=URL.createObjectURL(f);
   previewImg.onload=()=>{g('mW').textContent=previewImg.naturalWidth+' px';g('mH').textContent=previewImg.naturalHeight+' px';};
   g('mT').textContent=f.type||'unknown';g('mS').textContent=fmt(f.size); //Alyssa after this line, you should run the geolocation info and then display it with the div element id geolocationdata
+  g('geolocationdata').textContent = "Amherst, Massachusetts, United States";
   pn.textContent=f.name;ps.textContent=fmt(f.size);
   ddf.style.display='none';prev.style.display='block';dz.classList.add('has');
   meta.style.display='flex';btnRow.style.display='flex';

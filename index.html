@@ -81,7 +81,7 @@ body.drag .dh{display:block}
 
 /* Canvas wrapper */
 .canvas-wrap{position:relative;border:2px solid var(--bdr);border-radius:var(--r);overflow:hidden;background:#fff;cursor:crosshair;touch-action:none;width:100%}
-#colorCanvas,#outlineCanvas{display:block}
+#colorCanvas{display:block}
 
 /* Toolbar */
 .toolbar{margin-top:.9rem;padding:.8rem 1rem;background:var(--sur);border:2px solid var(--bdr);border-radius:var(--r);display:flex;flex-wrap:wrap;align-items:center;gap:.75rem}
@@ -200,8 +200,7 @@ header{animation:up .4s ease both}
   <div class="studio" id="studio">
     <div class="studio-label">Color it! 🎨</div>
     <div class="canvas-wrap" id="canvasWrap">
-      <canvas id="colorCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%"></canvas>
-      <canvas id="outlineCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none"></canvas>
+      <canvas id="colorCanvas" style="display:block;width:100%;height:auto"></canvas>
     </div>
 
     <!-- Toolbar -->
@@ -249,7 +248,8 @@ const pn=g('pn'),ps=g('ps'),meta=g('meta'),btnRow=g('btnRow'),bgo=g('bgo'),bdl=g
 const pw=g('pw'),pb=g('pb'),st=g('st'),studio=g('studio');
 const track=g('track'),oL=g('oL'),oR=g('oR'),cur=g('cur'),tDesc=g('tDesc'),tTxt=g('tTxt');
 const canvas=g('colorCanvas'),ctx=canvas.getContext('2d');
-const outline=g('outlineCanvas'),octx=outline.getContext('2d');
+// Offscreen canvas holds the permanent outline for redraws
+const offscreen=document.createElement('canvas'),octx=offscreen.getContext('2d');
 const brushSize=g('brushSize'),brushDot=g('brushDot'),customColor=g('customColor');
 
 let file=null,mode='simple_scan',side=0,dc=0;
@@ -336,15 +336,7 @@ function download(){
   const a=document.createElement('a');
   // If studio is visible, export the canvas (colored version); else raw file or processed blob
   if(studio.style.display!=='none'){
-    // Composite color layer + outline layer into one export canvas
-    const exp=document.createElement('canvas');
-    exp.width=canvas.width;exp.height=canvas.height;
-    const ectx=exp.getContext('2d');
-    ectx.fillStyle='#fff';ectx.fillRect(0,0,exp.width,exp.height);
-    ectx.drawImage(outline,0,0);
-    ectx.globalCompositeOperation='multiply';
-    ectx.drawImage(canvas,0,0);
-    a.href=exp.toDataURL('image/png');
+    a.href=canvas.toDataURL('image/png');
     a.download='coloring-page-colored.png';
   } else if(processedBlob){
     a.href=URL.createObjectURL(processedBlob);
@@ -362,13 +354,13 @@ function initStudio(blob){
   const image=new Image();
   image.onload=()=>{
     const w=image.naturalWidth,h=image.naturalHeight;
-    const wrap=g('canvasWrap');
-    const displayW=wrap.clientWidth||640;
-    const displayH=Math.round(displayW*h/w);
-    wrap.style.height=displayH+'px';
-    [canvas,outline].forEach(c=>{c.width=w;c.height=h;});
+    // Store outline in offscreen for redraws
+    offscreen.width=w;offscreen.height=h;
+    octx.drawImage(image,0,0);
+    // Draw initial state: white base + outline
+    canvas.width=w;canvas.height=h;
     ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);
-    octx.clearRect(0,0,w,h);octx.drawImage(image,0,0);
+    ctx.drawImage(offscreen,0,0);
     studio.style.display='block';
     studio.scrollIntoView({behavior:'smooth',block:'start'});
   };
@@ -416,6 +408,7 @@ g('tEraser').addEventListener('click',()=>{
 g('tClear').addEventListener('click',()=>{
   if(!confirm('Clear all coloring?'))return;
   ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.drawImage(offscreen,0,0);
 });
 
 // ── Canvas drawing ────────────────────────────────────────────────

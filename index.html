@@ -298,7 +298,7 @@ function load(f){
   previewImg.src=URL.createObjectURL(f);
   previewImg.onload=()=>{g('mW').textContent=previewImg.naturalWidth+' px';g('mH').textContent=previewImg.naturalHeight+' px';};
   g('mT').textContent=f.type||'unknown';g('mS').textContent=fmt(f.size); //Alyssa after this line, you should run the geolocation info and then display it with the div element id geolocationdata
-  g('geolocationdata').textContent = "Amherst, Massachusetts, United States";
+  //g('geolocationdata').textContent = "Amherst, Massachusetts, United States";
   pn.textContent=f.name;ps.textContent=fmt(f.size);
   ddf.style.display='none';prev.style.display='block';dz.classList.add('has');
   meta.style.display='flex';btnRow.style.display='flex';
@@ -322,6 +322,9 @@ bgo.addEventListener('click',async e=>{
     const fd=new FormData();fd.append('image',file);fd.append('mode',mode);
     const res=await fetch('https://loscaballeros-loscaballeros.hf.space/api/segment',{method:'POST',body:fd});
     if(!res.ok)throw new Error(res.statusText);
+    // get location information
+    const imglocinfo = res.headers.get('X-Location');
+    g('geolocationdata').textContent = imglocinfo;
     processedBlob=await res.blob();
     pb.style.width='100%';
     show('✓ Done! Start coloring below 🎨','ok');

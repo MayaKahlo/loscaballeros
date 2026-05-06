@@ -7,7 +7,18 @@
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Architects+Daughter&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#FFEDD2;--sur:#3d2512;--sur2:#4e2e14;--bdr:#7a4a22;--gld:#d4a017;--red:#c0392b;--txt:#f5e6c8;--dim:#b8956a;--err:#e74c3c;--r:14px}
+:root{
+  --bg:#FFEDD2;
+  --sur:#3d2512;
+  --sur2:#4e2e14;
+  --bdr:#7a4a22;
+  --gld:#d4a017;
+  --red:#c0392b;
+  --txt:#f5e6c8;
+  --dim:#b8956a;
+  --err:#e74c3c;
+  --r:14px
+}
 body{font-family:'Caveat',cursive;background:var(--bg);color:var(--txt);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:3rem 1.5rem}
 .wrap{width:100%;max-width:640px}
 header{margin-bottom:2.2rem}
@@ -199,7 +210,7 @@ header{animation:up .4s ease both}
 
   <!-- ── Coloring Studio (shown after processing) ─────────────────── -->
   <div class="studio" id="studio">
-    <div class="studio-label">Color it! 🎨</div>
+    <div class="studio-label">Now it's time to color it! 🎨 Feel free to download the image or directly color on it using the palette below.</div>
     <div class="canvas-wrap" id="canvasWrap">
       <canvas id="colorCanvas" style="display:block;width:100%;height:auto"></canvas>
     </div>
@@ -221,9 +232,9 @@ header{animation:up .4s ease both}
       </div>
       <!-- Tool buttons -->
       <div class="tool-btns">
-        <button class="tbtn on" id="tBrush">✏ Brush</button>
-        <button class="tbtn" id="tEraser">◻ Eraser</button>
-        <button class="tbtn danger" id="tClear">↺ Clear</button>
+        <button class="tbtn on" id="tBrush"><!--✏-->🖌️ Brush</button>
+        <button class="tbtn" id="tEraser"><!--◻-->◽️ Eraser</button>
+        <button class="tbtn danger" id="tClear"><!--↺-->🔄 Clear</button>
       </div>
     </div>
   </div>
@@ -232,9 +243,9 @@ header{animation:up .4s ease both}
   <section class="about">
     <h2>Meet the Team ✦ Los Caballeros</h2>
     <div class="profiles">
-      <div class="prof"><div class="av a1">MD</div><div class="pt"><h3>Maya De Los Santos</h3><div class="role">Frontend Developer</div><p>Hi! I constructed our website and worked on the frontend and processing controls!</p><a href="#">Portfolio →</a></div></div>
-      <div class="prof"><div class="av a2">AL</div><div class="pt"><h3>Alyssa Lanter</h3><div class="role">Backend Developer</div><p>Hi! I worked on pulling geolocation info from images and meshing between frontend and backend!</p><a href="#">Portfolio →</a></div></div>
-      <div class="prof"><div class="av a3">KL</div><div class="pt"><h3>Karina LaRubbio</h3><div class="role">Backend Developer</div><p>Hi! I worked on the SAM image segmentation rendering and the backend!</p><a href="#">Portfolio →</a></div></div>
+      <div class="prof"><div class="av a1">MD</div><div class="pt"><h3>Maya De Los Santos</h3><div class="role">Frontend Developer</div><p>Hi! I constructed our website and worked on the frontend and processing controls!</p><a href="https://mayakahlo.github.io/">Portfolio →</a></div></div>
+      <div class="prof"><div class="av a2">AL</div><div class="pt"><h3>Alyssa Lanter</h3><div class="role">Backend Developer</div><p>Hi! I worked on pulling geolocation info from images and meshing between frontend and backend!</p><a href="https://www.linkedin.com/in/alyssa-lanter/">Portfolio →</a></div></div>
+      <div class="prof"><div class="av a3">KL</div><div class="pt"><h3>Karina LaRubbio</h3><div class="role">Backend Developer</div><p>Hi! I worked on the SAM image segmentation rendering and the backend!</p><a href="https://klarubbio.github.io/">Portfolio →</a></div></div>
     </div>
   </section>
 </div>
@@ -259,8 +270,8 @@ let processedBlob=null; // holds the processed image blob for download
 
 // ── Toggle ────────────────────────────────────────────────────────
 const M=[
-  {v:'simple_scan',n:'Simple',a:'S',d:'Simple coloring page — the main lines of the image will be emphasized.'},
-  {v:'detailed_scan',n:'Detailed',a:'D',d:'Detailed coloring page — the main + intricate lines of the image will be emphasized.'}
+  {v:'simple_scan',n:'Simple',a:'S',d:'Simple coloring page — the main lines of the image will be emphasized using SAM.'},
+  {v:'detailed_scan',n:'Detailed',a:'D',d:'Detailed coloring page — the main + intricate lines of the image will be emphasized using a combination of SAM and adaptive filtering.'}
 ];
 function tog(s){
   side=s;const m=M[s];mode=m.v;
@@ -298,7 +309,6 @@ function load(f){
   previewImg.src=URL.createObjectURL(f);
   previewImg.onload=()=>{g('mW').textContent=previewImg.naturalWidth+' px';g('mH').textContent=previewImg.naturalHeight+' px';};
   g('mT').textContent=f.type||'unknown';g('mS').textContent=fmt(f.size); //Alyssa after this line, you should run the geolocation info and then display it with the div element id geolocationdata
-  //g('geolocationdata').textContent = "Amherst, Massachusetts, United States";
   pn.textContent=f.name;ps.textContent=fmt(f.size);
   ddf.style.display='none';prev.style.display='block';dz.classList.add('has');
   meta.style.display='flex';btnRow.style.display='flex';
@@ -372,7 +382,7 @@ function initStudio(blob){
   image.src=url;
 }
 
-// ── Palette ───────────────────────────────────────────────────────
+// ── Rainbow Palette !! ─────────────────────────────────────────────────────
 const COLORS=['#e74c3c','#e67e22','#f1c40f','#2ecc71','#1abc9c','#3498db','#9b59b6','#e91e63',
               '#ff7675','#fd79a8','#fdcb6e','#00b894','#0984e3','#6c5ce7','#2d3436','#636e72',
               '#b2bec3','#dfe6e9','#ffffff','#2b1a0e'];
@@ -427,24 +437,44 @@ function startDraw(e){
   e.preventDefault();painting=true;
   const p=pos(e);
   ctx.beginPath();ctx.moveTo(p.x,p.y);
-  dot(p); // paint a dot on click without drag
+  dot(p); // paint a dot on click when not dragging
 }
 function draw(e){
   e.preventDefault();
   if(!painting)return;
   const p=pos(e);
-  ctx.lineWidth=activeBrush;ctx.lineCap='round';ctx.lineJoin='round';
-  ctx.globalCompositeOperation='source-over';
-  ctx.strokeStyle=erasing?'#fff':activeColor+'b3';
-  ctx.lineTo(p.x,p.y);ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);
+  if(erasing){ // @Maya problem with erasing getting rid of outline, now have it so it redraws outine when getting rid of color
+    const r=activeBrush/2;
+    ctx.save();
+    ctx.beginPath();ctx.arc(p.x,p.y,r,0,Math.PI*2);ctx.clip();
+    ctx.fillStyle='#fff';ctx.fillRect(p.x-r,p.y-r,activeBrush,activeBrush);
+    ctx.drawImage(offscreen,p.x-r,p.y-r,activeBrush,activeBrush,p.x-r,p.y-r,activeBrush,activeBrush);
+    ctx.restore();
+  } else {
+    ctx.lineWidth=activeBrush;ctx.lineCap='round';ctx.lineJoin='round';
+    ctx.globalCompositeOperation='source-over';
+    ctx.strokeStyle=activeColor+'b3';
+    ctx.lineTo(p.x,p.y);ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);
+  }
 }
 function stopDraw(){painting=false;ctx.beginPath();}
 function dot(p){
-  ctx.lineWidth=activeBrush;ctx.lineCap='round';
-  ctx.globalCompositeOperation='source-over';
-  ctx.strokeStyle=erasing?'#fff':activeColor+'b3';
-  ctx.lineTo(p.x+0.1,p.y+0.1);ctx.stroke();ctx.beginPath();
+  if(erasing){
+    const r=activeBrush/2;
+    ctx.save();
+    ctx.beginPath();ctx.arc(p.x,p.y,r,0,Math.PI*2);ctx.clip();
+    ctx.fillStyle='#fff';ctx.fillRect(p.x-r,p.y-r,activeBrush,activeBrush);
+    ctx.drawImage(offscreen,p.x-r,p.y-r,activeBrush,activeBrush,p.x-r,p.y-r,activeBrush,activeBrush);
+    ctx.restore();
+  } else {
+    ctx.lineWidth=activeBrush;ctx.lineCap='round';
+    ctx.globalCompositeOperation='source-over';
+    ctx.strokeStyle=activeColor+'b3';
+    ctx.lineTo(p.x+0.1,p.y+0.1);ctx.stroke();ctx.beginPath();
+  }
 }
+
+// Mouse events for drawing on the canvas
 
 canvas.addEventListener('mousedown',startDraw);
 canvas.addEventListener('mousemove',draw);
@@ -454,7 +484,7 @@ canvas.addEventListener('touchstart',startDraw,{passive:false});
 canvas.addEventListener('touchmove',draw,{passive:false});
 canvas.addEventListener('touchend',stopDraw);
 
-// ── Helpers ───────────────────────────────────────────────────────
+// ── Helper Functions ───────────────────────────────────────────────────────
 function prog(){
   let p=0;pb.style.width='0';
   const id=setInterval(()=>{p+=Math.random()*18;if(p>=90){clearInterval(id);p=90;}pb.style.width=p+'%';},200);

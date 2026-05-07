@@ -3,14 +3,10 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public float speed = 10.0f;
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    //https://discussions.unity.com/t/implementing-drawing-on-a-flat-surface-of-a-3d-object-looking-for-advice-943694/943694/4
+    Color drawColor = Color.green;
+    bool inLine = false;
+    LineRenderer currentLine;
+    float timer;
 
     void Draw(){
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -18,22 +14,26 @@ public class PlayerController : MonoBehaviour
 
         if(Physics.Raycast(ray, out hit, 10f))
         {
-            // Get the texture off of whatever was hit
-            Debug.Log("Hit: " + hit.point);
-            Vector2 uv = hit.textureCoord;
-            Renderer rend = hit.transform.GetComponent<Renderer>();
-            Texture2D tex = rend.material.mainTexture as Texture2D;
-
-            // Change the color of the texture at those UV points
-            if (tex != null) {
-                int pixelX = (int)(uv.x * tex.width);
-                int pixelY = (int)(uv.y * tex.height);
+            if(!inLine){
+                // Start new line
+                GameObject newLineObj = new GameObject();
+                currentLine = newLineObj.AddComponent<LineRenderer>();
+                currentLine.material = new Material(Shader.Find("Sprites/Default"));
+                currentLine.startColor = drawColor;
+                currentLine.endColor = drawColor;
+                currentLine.startWidth = 0.2f;
+                currentLine.endWidth = 0.2f;
+                currentLine.positionCount = 1;
+                // send point in the direction of the normal a little bit
+                currentLine.SetPosition(0, hit.point + 0.1f*hit.normal);
                 
-                Color color = tex.GetPixel(pixelX, pixelY);
-                Debug.Log("Pixel Color: " + color);
+                inLine = true;
             }
-
-            // Update the texture
+            else{
+                // Add to current linerenderer
+                currentLine.positionCount++;
+                currentLine.SetPosition(currentLine.positionCount - 1, hit.point + 0.1f*hit.normal);
+            }
         }
     }
 
@@ -49,6 +49,13 @@ public class PlayerController : MonoBehaviour
         // listen for drawing
         if(Input.GetMouseButton(0)){
             Draw();
+            timer = 0.5f;
         }
+        else if(inLine && timer <= 0){
+            // Stop line
+            inLine = false;
+        }
+
+        timer -= Time.deltaTime;
     }
 }

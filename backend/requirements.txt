@@ -1,0 +1,12 @@
+torch
+torchvision
+fastapi
+uvicorn
+numpy
+opencv-python-headless
+matplotlib
+scipy
+segment_anything
+python-multipart
+pillow
+geopy

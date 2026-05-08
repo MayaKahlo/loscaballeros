@@ -12,7 +12,7 @@ public class PlayerController : MonoBehaviour
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
-        if(Physics.Raycast(ray, out hit, 10f))
+        if(Physics.Raycast(ray, out hit, 30f))
         {
             if(!inLine){
                 // Start new line
@@ -26,7 +26,7 @@ public class PlayerController : MonoBehaviour
                 currentLine.positionCount = 1;
                 // send point in the direction of the normal a little bit
                 currentLine.SetPosition(0, hit.point + 0.1f*hit.normal);
-                
+
                 inLine = true;
             }
             else{

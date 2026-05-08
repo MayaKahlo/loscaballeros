@@ -1,4 +1,27 @@
 # CS1430 Final Project, Team: Los Caballeros
-Final Project for CS1430. Here we make a system and interface where users can create custom coloring pages from real-life scenes, demonstrating a creative application of computer vision approaches we learned in class.
 
-At the most basic level, our system will take an image as input, perform edge detection, potentially enhanced with some threshold for color changes, to separate different regions of the image. A simple user interface, likely realized through a web application with WebGL, will allow users to choose colors and fill regions within the system-generated borders. If this is straightforward, we could potentially expand the project to create three-dimensional explorable coloring books. We would follow the model of works presented in class (Agarwal et al., Snavely et al.) by taking multiple images of the same scene as input, finding correspondences between the images, generating a three dimensional point cloud, finding edges, and then styling the scene as an interactive coloring book. This process, in addition to the end user interface, will be more complex, requiring us to consider how to render and interact with a three dimensional environment. WebGL has this functionality through plugins such as three.js, so that may be a feasible solution.
+We create digital custom coloring pages from real-life images using Meta's Segment Anything model and an interactive web application. Users can create 2D coloring pages using our website, and we also developed a proof of concept for creating 3D interactive coloring pages using scene reconstruction, segmentation, and interaction through a game. 
+
+## Visit the [website](https://mayakahlo.github.io/loscaballeros/) hosting our 2D implementation
+
+## 3D proof of concept demo ![here](/3d-playtime/demo.mp4)
+
+## File Structure and Explanation 
+### this list of files is not exhaustive but rather describes the overall structure of our repo
+|- index.html - main implementation file for 2D frontend
+|- readme.md - you are here
+|- backend
+ |- app.py - main implementation file for 2D backend
+ | NOTE: Our backend was hosted through HuggingFace Spaces and, in implementation, not a part of the same repo as the frontend. HuggingFace Spaces is built on top of Git, so we would have encountered conflicts due to nesting .git folders had this directory been within the frontend repo in our real implementation. The code is the same, but you can see the HuggingFace repo used in our hosted implementation [here](https://huggingface.co/spaces/loscaballeros/loscaballeros/tree/main).
+|- 3d-playtime
+ |- pointcloud - 3D backend
+  |- data - source image directory
+  |- generate_point_cloud.py - 3D reconstruction script
+  |- cluster_point_cloud.py - 3D segmentation script (outputs .obj files)
+  |- student.py - HW3 implementation w/ added helpers for reconstruction
+ |- unity - 3D frontend
+  |- Assets
+   |- Objects - imported .obj file directory
+   |- ComponentAdding.cs - add colliders to make objects interactive
+   |- PlayerController.cs - move the player and allow them to draw 
+

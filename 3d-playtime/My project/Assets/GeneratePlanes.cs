@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class PlaneTransform
 {
     public Vector3 position;
-    public Quaternion rotation;
+    public Vector3 rotation;
     public Vector3 scale;
 }
 
@@ -34,7 +34,7 @@ public class GeneratePlanes : MonoBehaviour
         {
             GameObject plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
             plane.transform.position = new Vector3(planeTransform.position.x, planeTransform.position.z, planeTransform.position.y);
-            plane.transform.rotation = planeTransform.rotation;
+            plane.transform.rotation = Quaternion.Euler(planeTransform.rotation.x, planeTransform.rotation.z, planeTransform.rotation.y);
             plane.transform.localScale = new Vector3(planeTransform.scale.x, planeTransform.scale.z, planeTransform.scale.y);
         }
 

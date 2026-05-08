@@ -52,7 +52,7 @@ for index, obox in enumerate(oboxes):
         obox, scale=[1, 1, 0.0001]
     )
     mesh.compute_vertex_normals()
-    o3d.io.write_triangle_mesh(f"plane_{index}.obj", mesh)
+    o3d.io.write_triangle_mesh(f"planes/plane_{index}.obj", mesh)
 
     ''''position = obox.center.tolist()
     rot = Rotation.from_matrix(obox.R)
@@ -119,7 +119,7 @@ for i in range(max_label + 1):
     faces = np.ascontiguousarray(faces)
     
     vmapping, indices, uvs = xatlas.parametrize(vertices, faces)
-    xatlas.export(f"{i}_output.obj", vertices[vmapping], indices, uvs)
+    xatlas.export(f"objs/{i}_output.obj", vertices[vmapping], indices, uvs)
     
 
 
@@ -130,43 +130,3 @@ no_planes_pcd.colors = o3d.utility.Vector3dVector(colors[:, :3])
 # center the viewer so that it is in the middle of points
 no_planes_pcd.translate(-no_planes_pcd.get_center())
 o3d.visualization.draw_geometries([no_planes_pcd])
-
-'''
-# iteratively fit a plane to the point cloud, remove inliers, and repeat until no more planes can be found
-while True:
-    # important that since there are so many points, ransac needs to fit a lot of points for a plane to count
-    plane_model, inliers = pcd.segment_plane(distance_threshold=0.05,
-                                             ransac_n = 100000,
-                                             num_iterations = 10)
-    [a, b, c, d] = plane_model
-
-    print('inliers', len(inliers))
-
-    inlier_cloud = pcd.select_by_index(inliers)
-    inlier_cloud.paint_uniform_color([1.0, 0, 0])
-    outlier_cloud = pcd.select_by_index(inliers, invert=True)
-    outlier_cloud.paint_uniform_color([0, 1.0, 0])
-    o3d.visualization.draw_geometries([inlier_cloud, outlier_cloud],
-                                    zoom=0.8,
-                                    front=[-0.4999, -0.1659, -0.8499],
-                                    lookat=[2.1813, 2.0619, 2.0999],
-                                    up=[0.1204, -0.9852, 0.1215])
-    break
-'''
-'''
-# cluster using dbscan 
-with o3d.utility.VerbosityContextManager(o3d.utility.VerbosityLevel.Debug) as cm:
-    labels = np.array(pcd.cluster_dbscan(eps=0.08, min_points=10, print_progress=True))
-
-max_label = labels.max()
-print(f"Point cloud has {max_label + 1} clusters")
-
-# Visualize clusters
-colors = plt.get_cmap("tab20")(labels / (max_label if max_label > 0 else 1))
-colors[labels < 0] = 0  # Black for noise
-pcd.colors = o3d.utility.Vector3dVector(colors[:, :3])
-# center the viewer so that it is in the middle of points
-pcd.translate(-pcd.get_center())
-o3d.visualization.draw_geometries([pcd])
-
-'''

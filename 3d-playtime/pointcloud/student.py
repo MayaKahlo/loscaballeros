@@ -39,6 +39,7 @@ import numpy as np
 import cv2
 import random
 import matplotlib.pyplot as plt
+from scipy.optimize import least_squares
 
 
 # =============================================================================
@@ -548,22 +549,6 @@ def triangulate(M1, M2, points1, points2):
 
 
 def pnp_ransac(object_points, image_points, K, num_iters=100, reprojection_error_threshold=8.0):
-    """
-    Estimate camera pose (R, t) from 3D-to-2D correspondences using PnP + RANSAC.
-    
-    Uses cv2.solvePnPRansac which:
-      1. Randomly samples 4 correspondences
-      2. Solves PnP for camera pose
-      3. Reprojects all points and counts inliers
-      4. Keeps the pose with most inliers
-    
-    :param object_points: N x 3 array of 3D world points
-    :param image_points: N x 2 array of 2D image points
-    :param K: 3x3 camera intrinsic matrix
-    :param num_iters: number of RANSAC iterations
-    :param reprojection_error_threshold: max reprojection error in pixels for inlier
-    :return: R (3x3 rotation), t (3x1 translation), inlier_indices (M,)
-    """
     # Use OpenCV's PnP RANSAC solver
     success, rvec, tvec, inlier_indices = cv2.solvePnPRansac(
         object_points.astype(np.float32),
@@ -588,16 +573,6 @@ def pnp_ransac(object_points, image_points, K, num_iters=100, reprojection_error
 
 
 def build_camera_matrix(K, R, t):
-    """
-    Build a 3x4 projection matrix from K, R, t.
-    
-    M = K @ [R | t]
-    
-    :param K: 3x3 intrinsic matrix
-    :param R: 3x3 rotation matrix
-    :param t: 3x1 or 3, translation vector
-    :return: 3x4 projection matrix
-    """
     if t.shape == (3,):
         t = t.reshape(3, 1)
     Rt = np.hstack((R, t))
@@ -605,21 +580,6 @@ def build_camera_matrix(K, R, t):
 
 
 def bundle_adjustment(cameras, points_3d, tracks, image_points_list, K, max_iters=10):
-    """
-    Refine camera poses and 3D points using bundle adjustment via Levenberg-Marquardt.
-    
-    Uses scipy.optimize.least_squares to minimize reprojection error:
-        min sum_i || p_i - project(M_i, X) ||^2
-    
-    :param cameras: list of (R, t) tuples, one per camera
-    :param points_3d: M x 3 array of 3D points to optimize
-    :param tracks: dict mapping point_idx -> [(camera_idx, keypoint_idx), ...]
-    :param image_points_list: list of dicts mapping keypoint_idx -> 2D image coordinates for each camera
-    :param K: 3x3 camera intrinsic matrix
-    :param max_iters: max iterations for optimization
-    :return: refined_cameras, refined_points_3d
-    """
-    from scipy.optimize import least_squares
     
     num_cameras = len(cameras)
     num_points = points_3d.shape[0]
@@ -635,7 +595,6 @@ def bundle_adjustment(cameras, points_3d, tracks, image_points_list, K, max_iter
     params = np.array(params)
     
     def residuals(params):
-        """Compute reprojection errors for all tracks."""
         errors = []
         
         # Unpack cameras
@@ -675,7 +634,7 @@ def bundle_adjustment(cameras, points_3d, tracks, image_points_list, K, max_iter
     result = least_squares(residuals, params, max_nfev=max_iters * 100, verbose=0)
     optimized_params = result.x
     
-    # Unpack refined cameras
+    # organize output
     idx = 0
     refined_cameras = []
     for i in range(num_cameras):
@@ -685,7 +644,6 @@ def bundle_adjustment(cameras, points_3d, tracks, image_points_list, K, max_iter
         refined_cameras.append((R, tvec.reshape(3, 1)))
         idx += 6
     
-    # Unpack refined 3D points
     refined_points_3d = optimized_params[idx:].reshape(-1, 3)
     
     return refined_cameras, refined_points_3d

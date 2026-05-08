@@ -31,3 +31,6 @@ We create digital custom coloring pages from real-life images using Meta's Segme
 |---- ComponentAdding.cs - add colliders to make objects interactive  
 |---- PlayerController.cs - move the player and allow them to draw   
 
+### Poster
+![poster](/POSTER.PNG)
+
